@@ -2,11 +2,25 @@ const mongoose = require('mongoose');
 const app = require('./app');
 const config = require('./config/config');
 const logger = require('./config/logger');
+const socket = require('./config/socket');
 
-let server;
+const socker = require('./services/socker.service')
+let server = require('http').createServer(app);
+// config socket
+const io = require('socket.io')(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"]
+  }
+});
+
+global.io = io.listen(server)
+global.io.on('connection', socker.connection)
+
 mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
   logger.info('Connected to MongoDB');
-  server = app.listen(config.port, () => {
+
+  server = server.listen(config.port, () => {
     logger.info(`Listening to port ${config.port}`);
   });
 });

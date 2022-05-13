@@ -13,8 +13,20 @@ const { authLimiter } = require('./middlewares/rateLimiter');
 const routes = require('./routes/v1');
 const { errorConverter, errorHandler } = require('./middlewares/error');
 const ApiError = require('./utils/ApiError');
-
 const app = express();
+
+var whitelist = ["http://localhost:3000"]
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}
+
+app.use(cors(corsOptions))
 
 if (config.env !== 'test') {
   app.use(morgan.successHandler);
@@ -54,9 +66,9 @@ if (config.env === 'production') {
 app.use('/', routes);
 
 // send back a 404 error for any unknown api request
-app.use((req, res, next) => {
-  next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
-});
+// app.use((req, res, next) => {
+//   next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
+// });
 
 // convert error to ApiError, if needed
 app.use(errorConverter);
