@@ -26,7 +26,7 @@ const getMessageOfRoom = async (chatId, limit, page) => {
  * @returns {Promise<Rooms>}
  */
 const createNewMessage =async (messageData) => {
-  
+  console.log(messageData.creator)
   try {
     const newMessage = new Messages({
       message: messageData.message,
@@ -40,12 +40,12 @@ const createNewMessage =async (messageData) => {
     const result = await newMessage.save();
 
     const updateLassMessageChat = await Rooms.findOneAndUpdate(
-      { _id: chatId },
-      { lastMessage: result._id }
-    );
-  
+      { _id: messageData.chatId },
+      { lastMessage: result._id },
+      {new: true}
+    ).populate('members', '-password -likePost').populate('lastMessage');
 
-    return result;
+    return {newMessage: result, roomUpdate: updateLassMessageChat};
   } catch (error) {
     console.log("🚀 ~ file: message.service.js ~ line 28 ~ createNewMessage ~ error", error);
   }

@@ -24,8 +24,7 @@ const getRoomsOfUser = catchAsync(async (req, res) => {
 
   const rooms = await Rooms.find(filter)
     .populate('members', '-password -likePost')
-    .populate('lastMessage')
-    .sort(options.sortBy)
+    .populate({path: 'lastMessage', options: { sort: { 'createdAt':-1 } } })
     .skip(skip)
     .limit(limit);
   const totalPages = Math.ceil(countPromise / limit);

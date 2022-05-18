@@ -14,7 +14,15 @@ const io = require('socket.io')(server, {
   }
 });
 
-global.io = io.listen(server)
+global.io = io.listen(server, {  
+    cors: {
+    origin: 'http://localhost:3000',
+    methods: ['GET', 'POST']
+  },
+  cookie: false,
+  serveClient: true,
+  transports: ['polling']
+})
 global.io.on('connection', socker.connection)
 
 mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
