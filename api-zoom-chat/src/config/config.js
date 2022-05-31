@@ -65,4 +65,6 @@ module.exports = {
   authToken: process.env.TWILIO_AUTH_TOKEN,
   serviceId: process.env.SERVICE_ID,
   apiAuthChat: process.env.API_AUTH_CHAT,
+  cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+  cloudinarySecret: process.env.CLOUDINARY_API_SECRET,
 };

@@ -1,4 +1,5 @@
 const httpStatus = require('http-status');
+const mongoose = require('mongoose');
 const catchAsync = require('../utils/catchAsync');
 // const { roomsService } = require('../services');
 const { Rooms } = require('../models');
@@ -24,7 +25,7 @@ const getRoomsOfUser = catchAsync(async (req, res) => {
 
   const rooms = await Rooms.find(filter)
     .populate('members', '-password -likePost')
-    .populate({path: 'lastMessage', options: { sort: { 'createdAt':-1 } } })
+    .populate({ path: 'lastMessage', options: { sort: { createdAt: -1 } } })
     .skip(skip)
     .limit(limit);
   const totalPages = Math.ceil(countPromise / limit);
@@ -40,8 +41,17 @@ const getRoomsOfUser = catchAsync(async (req, res) => {
 });
 
 const createNewRoom = catchAsync(async (req, res) => {
-  const newRoom = await Rooms.create(req.body);
-  res.status(httpStatus.CREATED).send(newRoom);
+  let { members, isMuted, createdBy } = req.body;
+
+  members = members.map(mongoose.Types.ObjectId);
+  isMuted = isMuted.map(mongoose.Types.ObjectId);
+  createdBy = mongoose.Types.ObjectId(createdBy);
+
+  const newRoom = await Rooms.create({ ...req.body, members, isMuted, createdBy });
+  await newRoom.save();
+  const findRomeById = await Rooms.findOne({ _id: newRoom._id }).populate('members', '-password -likePost');
+
+  res.status(httpStatus.CREATED).send({ chat: findRomeById });
 });
 
 const getRoomById = catchAsync(async (req, res) => {

@@ -1,4 +1,3 @@
-
 const { toJSON, paginate } = require('./plugins');
 const mongoose = require('mongoose');
 
@@ -12,7 +11,7 @@ const messageSchema = Schema(
     },
     messageImage: [
       {
-        type: String,
+        type: Object,
       },
     ],
     messageType: {

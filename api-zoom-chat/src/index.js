@@ -4,26 +4,25 @@ const config = require('./config/config');
 const logger = require('./config/logger');
 const socket = require('./config/socket');
 
-const socker = require('./services/socker.service')
+const socker = require('./services/socker.service');
 let server = require('http').createServer(app);
 // config socket
 const io = require('socket.io')(server, {
   cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"]
-  }
+    origin: 'http://localhost:3000',
+    methods: ['GET', 'POST'],
+  },
 });
 
-global.io = io.listen(server, {  
-    cors: {
+global.io = io.listen(server, {
+  cors: {
     origin: 'http://localhost:3000',
-    methods: ['GET', 'POST']
+    methods: ['GET', 'POST'],
   },
-  cookie: false,
-  serveClient: true,
-  transports: ['polling']
-})
-global.io.on('connection', socker.connection)
+
+  transports: ['polling'],
+});
+global.io.on('connection', socker.connection);
 
 mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
   logger.info('Connected to MongoDB');

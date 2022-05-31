@@ -18,6 +18,9 @@ const roomSchema = Schema(
     groupName: {
       type: String,
     },
+    description: {
+      type: String,
+    },
     createdBy: {
       type: ObjectId,
       ref: User,

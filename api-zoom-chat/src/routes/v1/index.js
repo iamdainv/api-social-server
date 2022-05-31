@@ -3,6 +3,7 @@ const express = require('express');
 const docsRoute = require('./docs.route');
 const roomsRoute = require('./rooms.route');
 const messageRoute = require('./message.route');
+const uploadRoute = require('./upload.route');
 const config = require('../../config/config');
 
 const router = express.Router();
@@ -22,6 +23,10 @@ const devRoutes = [
   {
     path: '',
     route: messageRoute,
+  },
+  {
+    path: '',
+    route: uploadRoute,
   },
 ];
 

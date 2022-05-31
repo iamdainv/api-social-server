@@ -5,29 +5,53 @@ const mongoSanitize = require('express-mongo-sanitize');
 const compression = require('compression');
 const cors = require('cors');
 const passport = require('passport');
-const httpStatus = require('http-status');
+const cloudinary = require('cloudinary').v2;
+const fileUpload = require('express-fileupload');
+const urlMetadata = require('url-metadata');
 const config = require('./config/config');
 const morgan = require('./config/morgan');
 const { jwtStrategy } = require('./config/passport');
 const { authLimiter } = require('./middlewares/rateLimiter');
 const routes = require('./routes/v1');
 const { errorConverter, errorHandler } = require('./middlewares/error');
-const ApiError = require('./utils/ApiError');
+
 const app = express();
+// urlMetadata('https://www.youtube.com/watch?v=wNO6kMJB63I&list=RDwNO6kMJB63I&index=1').then(
+//   function (metadata) {
+//     // success handler
+//     console.log(metadata);
+//   },
+//   function (error) {
+//     // failure handler
+//     console.log(error);
+//   }
+// );
+cloudinary.config({
+  cloud_name: 'social-app-5-01',
+  api_key: config.cloudinaryApiKey,
+  api_secret: config.cloudinarySecret,
+  secure: true,
+});
 
-var whitelist = ["http://localhost:3000"]
-var corsOptions = {
-  origin: function (origin, callback) {
+const whitelist = ['http://localhost:3000'];
+const corsOptions = {
+  origin(origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
+      callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'))
+      callback(new Error('Not allowed by CORS'));
     }
-    
-  }
-}
+  },
+};
 
-app.use(cors(corsOptions))
+// app.use(cors(corsOptions));
+
+app.use(
+  fileUpload({
+    // limits: { fileSize: 50 * 1024 * 1024 },
+    useTempFiles: true,
+  })
+);
 
 if (config.env !== 'test') {
   app.use(morgan.successHandler);

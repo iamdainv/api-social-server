@@ -10,5 +10,6 @@ const roomsServiceProxy = httpProxy(process.env.API_CHAT);
 
 router.get("/v1/message/:chatId", roomsServiceProxy);
 router.post("/v1/message/newmessage", roomsServiceProxy);
+router.post("/v1/upload/single", roomsServiceProxy);
 
 module.exports = router;
