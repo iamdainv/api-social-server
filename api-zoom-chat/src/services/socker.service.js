@@ -2,13 +2,23 @@ const { getMessageOfRoom, createNewMessage } = require('./message.service');
 
 require('dotenv').config();
 
-const LIMIT_MESSAGE_RESPONSE = 30;
+const LIMIT_MESSAGE_RESPONSE = 100000;
 
 const connection = (socket) => {
   const { user } = socket.handshake.auth;
 
+  socket.on('online', () => {
+    socket.join(`user:${user.id}`);
+  });
+
   socket.on('joinRoom', (roomId) => {
     socket.join(`room:${roomId}`);
+  });
+
+  socket.on('newChat', (chat) => {
+    chat.members.forEach((member) => {
+      socket.to(`user:${member._id}`).emit('newChatReceive', chat);
+    });
   });
 
   socket.on('getMessagesOfRooms', (dataChats, callback) => {
